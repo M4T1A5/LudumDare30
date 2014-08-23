@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -34,7 +33,7 @@ public class LD30Game extends ApplicationAdapter
 
     // Assets
     Texture planetTexture, planetOutlineTexture;
-    Texture lineTexture;
+    Texture lineTexture, lineErrorTexture;
 
     @Override
     public void create()
@@ -139,6 +138,7 @@ public class LD30Game extends ApplicationAdapter
         planetTexture = new Texture(Gdx.files.internal("planet.png"));
         planetOutlineTexture = new Texture(Gdx.files.internal("planet_outline.png"));
         lineTexture = new Texture(Gdx.files.internal("line_piece.png"));
+        lineErrorTexture = new Texture(Gdx.files.internal("line_piece_error.png"));
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("kenpixel_future.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -188,7 +188,19 @@ public class LD30Game extends ApplicationAdapter
                 temp = camera.unproject(temp);
                 Vector2 worldPos = new Vector2(temp.x, temp.y);
 
+                Line newest = lines.get(lines.size-1);
+                newest.setEndPos(worldPos);
+                newest.setTexture(lineTexture);
 
+                // Dont check newest line
+                for (int i = 0; i < lines.size - 1; i++)
+                {
+                    if(newest.intersects(lines.get(i)))
+                    {
+                        newest.setTexture(lineErrorTexture);
+                        break;
+                    }
+                }
 
                 for (int i = 0; i < planets.size; i++)
                 {
@@ -196,7 +208,12 @@ public class LD30Game extends ApplicationAdapter
                     if(!planet.isVisited && planet.isPointInside(worldPos))
                     {
                         Vector2 endPos = new Vector2(planet.getCenter());
-                        lines.get(lines.size - 1).setEndPos(endPos);
+                        Vector2 startPos = new Vector2(endPos);
+                        Vector2 lineNormal = new Vector2(newest.endPos).sub(newest.startPos).nor();
+                        lineNormal.scl(2);
+                        endPos.sub(lineNormal);
+                        startPos.add(lineNormal);
+                        newest.setEndPos(endPos);
                         planet.isVisited = true;
                         planetsLeft--;
 
@@ -207,7 +224,7 @@ public class LD30Game extends ApplicationAdapter
                         }
                         else
                         {
-                            lines.add(new Line(lineTexture, endPos));
+                            lines.add(new Line(lineTexture, startPos));
                             break;
                         }
                     }

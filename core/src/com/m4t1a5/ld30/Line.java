@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Line extends Entity
 {
-    private Vector2 startPos;
-    private Vector2 endPos;
+    public Vector2 startPos;
+    public Vector2 endPos;
 
     public Line(Texture texture)
     {
@@ -46,14 +46,23 @@ public class Line extends Entity
 
     public boolean intersects(Line other)
     {
+        // http://stackoverflow.com/a/565282
+        Vector2 qsubp = new Vector2(other.startPos).sub(startPos);
+        Vector2 s = new Vector2(other.endPos).sub(other.startPos);
+        Vector2 r = new Vector2(endPos).sub(startPos);
+
+        if(r.crs(s) == 0)
+            return false; // Lines are parallel
 
 
-        return false;
+        float u = qsubp.crs(r) / (r.crs(s));
+        float t = qsubp.crs(s) / (r.crs(s));
+        return t >= 0 && t <= 1 && u >= 0 && u <= 1;
     }
 
     private void update()
     {
-        final Vector2 startToEnd = endPos.sub(startPos);
+        final Vector2 startToEnd = new Vector2(endPos).sub(startPos);
 
         setPosition(startPos);
         setRotation(startToEnd.angle());
