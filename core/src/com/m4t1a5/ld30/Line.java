@@ -57,9 +57,18 @@ public class Line extends Entity
         Vector2 s = new Vector2(other.endPos).sub(other.startPos);
         Vector2 r = new Vector2(endPos).sub(startPos);
 
-        if(r.crs(s) == 0)
-            return false; // Lines are parallel
 
+        if(qsubp.crs(r) == 0 && r.crs(s) == 0)
+        {
+            float a = qsubp.dot(r);
+            float b = new Vector2(other.endPos).sub(startPos).dot(s);
+
+            // colinear, so do they overlap?
+            return ((a >= 0 && a <= r.dot(r)) || (b >= 0 && b <= s.dot(s)));
+
+        }
+        else if(r.crs(s) == 0)
+            return false; // Lines are parallel
 
         float u = qsubp.crs(r) / (r.crs(s));
         float t = qsubp.crs(s) / (r.crs(s));

@@ -3,6 +3,7 @@ package com.m4t1a5.ld30;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -14,15 +15,26 @@ import com.badlogic.gdx.utils.Array;
  */
 public class GameScene implements Scene
 {
+    private Camera camera;
+
     private Array<Planet> planets;
     private Array<Line> lines;
 
-    private boolean canDrawLines = true;
-    private int currentRoundPlanets = Settings.PLANET_START_COUNT;
-    private float nextRoundTimer = 0;
-    private int planetsLeft = currentRoundPlanets;
+    private boolean canDrawLines;
+    private boolean linesCrossed;
+    private float lineResetTimer;
+    private float roundTimer;
+    private float nextRoundTimer;
+    private int currentRound;
+    private float nextRoundTransitionTimer;
+    private int planetsLeft;
+    private boolean wonRound;
+    private boolean lostGame;
 
-    private Camera camera;
+    private float lineCrossTime;
+
+    private int score;
+
 
     public GameScene(Camera camera)
     {
@@ -36,6 +48,18 @@ public class GameScene implements Scene
         planets = new Array<Planet>();
         lines = new Array<Line>();
 
+        canDrawLines = true;
+        linesCrossed = false;
+        lineResetTimer = 0;
+        roundTimer = Settings.BASE_ROUND_TIME;
+        nextRoundTimer = Settings.BASE_ROUND_TIME;
+        currentRound = 0;
+        nextRoundTransitionTimer = 0;
+        wonRound = false;
+        lostGame = false;
+        lineCrossTime = 0;
+        score = 0;
+
         createPlanets(Settings.PLANET_START_COUNT);
         //setupInput();
     }
@@ -43,19 +67,39 @@ public class GameScene implements Scene
     @Override
     public void update()
     {
+        if(!wonRound && !lostGame)
+            roundTimer -= Gdx.graphics.getDeltaTime();
+
+        if(roundTimer <= 0 && !lostGame)
+        {
+            // Lost the game
+            canDrawLines = false;
+            lostGame = true;
+            roundTimer = 0;
+            nextRoundTransitionTimer = Settings.ROUND_TRANSITION_TIME;
+        }
+
         if(lines.size > 0)
         {
             Line newest = lines.get(lines.size - 1);
-            newest.setTexture(Assets.lineTexture);
 
             // Dont check newest line
             for (int i = 0; i < lines.size - 1; i++)
             {
-                if (newest.intersects(lines.get(i)))
+                if (newest.intersects(lines.get(i)) && !linesCrossed)
                 {
-                    newest.setTexture(Assets.lineErrorTexture);
+                    lineCrossTime += Gdx.graphics.getDeltaTime();
                     break;
                 }
+            }
+
+            if(lineCrossTime > 0.1f)
+            {
+                newest.setTexture(Assets.lineErrorTexture);
+                canDrawLines = false;
+                linesCrossed = true;
+                lineResetTimer = Settings.LINE_RESET_TIME;
+                lineCrossTime = 0;
             }
 
             for (int i = 0; i < planets.size; i++)
@@ -77,7 +121,9 @@ public class GameScene implements Scene
                     if (planetsLeft == 0)
                     {
                         canDrawLines = false;
-                        nextRoundTimer = 1;
+                        wonRound = true;
+                        nextRoundTransitionTimer = Settings.ROUND_TRANSITION_TIME;
+                        score += calculateScore();
                         break;
                     }
                     else
@@ -89,16 +135,39 @@ public class GameScene implements Scene
             }
         }
 
+        if(linesCrossed)
+        {
+            lineResetTimer -= Gdx.graphics.getDeltaTime();
+            if(lineResetTimer <= 0)
+            {
+                resetLinesAndPlanets();
+                canDrawLines = true;
+                linesCrossed = false;
+            }
+        }
+
         // Round is over
-        if(nextRoundTimer > 0 && !canDrawLines)
-            nextRoundTimer -= Gdx.graphics.getDeltaTime();
-        else if(nextRoundTimer <= 0 && !canDrawLines)
-            nextRound();
+        if(wonRound || lostGame)
+        {
+            if (nextRoundTransitionTimer > 0)
+                nextRoundTransitionTimer -= Gdx.graphics.getDeltaTime();
+            else if (wonRound)
+            {
+
+                nextRound();
+            }
+            else
+            {
+                ((LD30Game) Gdx.app.getApplicationListener()).changeState(GameState.Menu);
+            }
+        }
     }
 
     @Override
     public void draw(SpriteBatch batch)
     {
+        batch.draw(Assets.gameBackground, 0, 0);
+
         for (int i = 0; i < lines.size; i++)
         {
             lines.get(i).draw(batch);
@@ -106,6 +175,29 @@ public class GameScene implements Scene
         for (int i = 0; i < planets.size; i++)
         {
             planets.get(i).draw(batch);
+        }
+
+        final int possibleScore = calculateScore();
+        String scoreTime = String.format("Time remaining: %.2f\nRound score: %d\nTotal score: %d",
+                roundTimer, possibleScore, score);
+        BitmapFont.TextBounds bounds = Assets.font20.getMultiLineBounds(scoreTime);
+        Assets.font20.drawMultiLine(batch, scoreTime, Settings.WORLD_WIDTH - bounds.width - 20,
+                Settings.WORLD_HEIGHT - 20);
+
+        if(linesCrossed)
+        {
+            String lineCrossText = "Lines Crossed";
+            bounds = Assets.font20.getBounds(lineCrossText);
+            Assets.font20.draw(batch, lineCrossText, Settings.WORLD_WIDTH/2 - bounds.width/2,
+                    Settings.WORLD_HEIGHT - bounds.height);
+        }
+
+        if(lostGame)
+        {
+            String lostGameText = "Time ran out\nand you lost";
+            bounds = Assets.font20.getMultiLineBounds(lostGameText);
+            Assets.font20.drawMultiLine(batch, lostGameText, Settings.WORLD_WIDTH / 2 - bounds.width / 2,
+                    Settings.WORLD_HEIGHT / 2 + bounds.height / 2);
         }
     }
 
@@ -118,11 +210,23 @@ public class GameScene implements Scene
 
     private void nextRound()
     {
+        currentRound++;
         dispose();
-        if(currentRoundPlanets < Settings.PLANET_MAX_COUNT)
-            currentRoundPlanets++;
-        createPlanets(currentRoundPlanets);
+        int nextRoundPlanetCount = Settings.PLANET_START_COUNT + currentRound;
+        if(nextRoundPlanetCount > Settings.PLANET_MAX_COUNT)
+            roundTimer = Math.max(--nextRoundTimer, 1);
+        else
+            roundTimer = Settings.BASE_ROUND_TIME;
+
+        createPlanets(nextRoundPlanetCount);
         canDrawLines = true;
+        wonRound = false;
+        linesCrossed = false;
+    }
+
+    private int calculateScore()
+    {
+        return (int)Math.floor((roundTimer / nextRoundTimer)*Settings.SCORE_MULTIPLIER);
     }
 
     private void createPlanets(int numberOfPlanets)
@@ -154,6 +258,17 @@ public class GameScene implements Scene
         }
 
         planetsLeft = numberOfPlanets;
+    }
+
+    private void resetLinesAndPlanets()
+    {
+        lines.clear();
+        for (int i = 0; i < planets.size; i++)
+        {
+            planets.get(i).isVisited = false;
+        }
+
+        planetsLeft = Settings.PLANET_START_COUNT + currentRound;
     }
 
     private void startNewLine(Vector2 pos)

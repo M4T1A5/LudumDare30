@@ -38,7 +38,7 @@ public class Assets
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 20;
         // No need to generate more characters because i will never use them
-        parameter.characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:;";
+        parameter.characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:;.,+-*/";
         font20 = generator.generateFont(parameter);
         generator.dispose();
 
