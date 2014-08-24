@@ -35,7 +35,7 @@ public class GameScene implements Scene
         lines = new Array<Line>();
 
         createPlanets(Settings.PLANET_START_COUNT);
-        setupInput();
+        //setupInput();
     }
 
     @Override
@@ -92,7 +92,8 @@ public class GameScene implements Scene
         }
     }
 
-    private void setupInput()
+    @Override
+    public void setupInput()
     {
         // TODO: possibly cleanup input
         Gdx.input.setInputProcessor(new InputAdapter() {

@@ -16,6 +16,9 @@ public class LD30Game extends ApplicationAdapter
     private Camera camera;
     private Viewport viewport;
 
+    private GameState gameState = GameState.Menu;
+
+    private MenuScene menuScene;
     private GameScene gameScene;
 
     @Override
@@ -30,6 +33,9 @@ public class LD30Game extends ApplicationAdapter
         camera.position.set(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, camera);
+
+        menuScene = new MenuScene(viewport);
+        menuScene.create();
 
         gameScene = new GameScene(camera);
         gameScene.create();
@@ -57,9 +63,31 @@ public class LD30Game extends ApplicationAdapter
         Assets.dispose();
     }
 
+    public void changeState(GameState newState)
+    {
+        gameState = newState;
+        switch (gameState)
+        {
+            case Menu:
+                menuScene.setupInput();
+                break;
+            case Play:
+                gameScene.setupInput();
+                break;
+        }
+    }
+
     private void update()
     {
-        gameScene.update();
+        switch (gameState)
+        {
+            case Menu:
+                menuScene.update();
+                break;
+            case Play:
+                gameScene.update();
+                break;
+        }
     }
 
     private void draw()
@@ -71,7 +99,15 @@ public class LD30Game extends ApplicationAdapter
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
 
-        gameScene.draw(batch);
+        switch (gameState)
+        {
+            case Menu:
+                menuScene.draw(batch);
+                break;
+            case Play:
+                gameScene.draw(batch);
+                break;
+        }
 
         // TODO: Score system
         String text = String.format("Derps\nDurps");

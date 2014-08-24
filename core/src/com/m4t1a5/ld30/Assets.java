@@ -14,6 +14,8 @@ public class Assets
     public static Texture planetTexture, planetOutlineTexture;
     public static Texture lineTexture, lineErrorTexture;
 
+    public static Texture buttonUp, buttonDown;
+
     public static BitmapFont font20;
 
     private static boolean assetsLoaded = false;
@@ -27,6 +29,10 @@ public class Assets
         planetOutlineTexture = new Texture(Gdx.files.internal("planet_outline.png"));
         lineTexture = new Texture(Gdx.files.internal("line_piece.png"));
         lineErrorTexture = new Texture(Gdx.files.internal("line_piece_error.png"));
+
+        buttonDown = new Texture(Gdx.files.internal("buttonUp.png"));
+        buttonUp = new Texture(Gdx.files.internal("buttonDown.png"));
+
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("kenpixel_future.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();

@@ -12,4 +12,5 @@ public interface Scene extends Disposable
 
     public void update();
     public void draw(SpriteBatch batch);
+    public void setupInput();
 }
