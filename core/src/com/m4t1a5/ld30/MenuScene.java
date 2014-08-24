@@ -31,6 +31,7 @@ public class MenuScene implements Scene
         stage = new Stage(viewport);
 
         skin = new Skin();
+        skin.add("background", Assets.menuBackground);
         skin.add("buttonUp", Assets.buttonUp);
         skin.add("buttonDown", Assets.buttonDown);
         skin.add("default", Assets.font20);
@@ -45,6 +46,7 @@ public class MenuScene implements Scene
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+        table.background(skin.newDrawable("background"));
 
 
         final TextButton startButton = new TextButton("Start", skin);
@@ -54,7 +56,6 @@ public class MenuScene implements Scene
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
-                System.out.println("Button is " + startButton.isChecked());
                 ((LD30Game) Gdx.app.getApplicationListener()).changeState(GameState.Play);
             }
         });

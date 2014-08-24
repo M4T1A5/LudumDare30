@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Disposable;
  */
 public class Assets
 {
+    public static Texture gameBackground, menuBackground;
+
     public static Texture planetTexture, planetOutlineTexture;
     public static Texture lineTexture, lineErrorTexture;
 
@@ -24,6 +26,9 @@ public class Assets
     {
         if(assetsLoaded)
             return;
+
+        menuBackground = new Texture(Gdx.files.internal("menu_background.png"));
+        gameBackground = new Texture(Gdx.files.internal("background.png"));
 
         planetTexture = new Texture(Gdx.files.internal("planet.png"));
         planetOutlineTexture = new Texture(Gdx.files.internal("planet_outline.png"));
@@ -50,6 +55,8 @@ public class Assets
         if(!assetsLoaded)
             return;
 
+        menuBackground.dispose();
+        gameBackground.dispose();
         planetOutlineTexture.dispose();
         planetTexture.dispose();
         lineErrorTexture.dispose();

@@ -72,6 +72,8 @@ public class LD30Game extends ApplicationAdapter
                 menuScene.setupInput();
                 break;
             case Play:
+                gameScene.dispose();
+                gameScene.create();
                 gameScene.setupInput();
                 break;
         }
@@ -108,11 +110,6 @@ public class LD30Game extends ApplicationAdapter
                 gameScene.draw(batch);
                 break;
         }
-
-        // TODO: Score system
-        String text = String.format("Derps\nDurps");
-        BitmapFont.TextBounds bounds = Assets.font20.getMultiLineBounds(text);
-        Assets.font20.drawMultiLine(batch, text, Settings.WORLD_WIDTH - bounds.width, Settings.WORLD_HEIGHT - bounds.height);
         batch.end();
     }
 }
