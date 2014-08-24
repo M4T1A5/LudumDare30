@@ -11,24 +11,30 @@ public class Line extends Entity
     public Vector2 startPos;
     public Vector2 endPos;
 
-    public Line(Texture texture)
+    public Planet startPlanet;
+    public boolean hasEnded = false;
+
+    public Line(Texture texture, Planet startPlanet)
     {
         super(texture);
+        this.startPlanet = startPlanet;
     }
 
-    public Line(Texture tex, Vector2 startPos)
+    public Line(Texture tex, Planet startPlanet, Vector2 startPos)
     {
         super(tex);
         this.startPos = new Vector2(startPos);
         endPos = new Vector2(startPos);
+        this.startPlanet = startPlanet;
         update();
     }
 
-    public Line(Texture tex, Vector2 startPos, Vector2 endPos)
+    public Line(Texture tex, Planet startPlanet, Vector2 startPos, Vector2 endPos)
     {
         super(tex);
         this.startPos = new Vector2(startPos);
         this.endPos = new Vector2(endPos);
+        this.startPlanet = startPlanet;
         update();
     }
 

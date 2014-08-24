@@ -41,6 +41,49 @@ public class GameScene implements Scene
     @Override
     public void update()
     {
+        if(lines.size > 0)
+        {
+            Line newest = lines.get(lines.size - 1);
+            newest.setTexture(Assets.lineTexture);
+
+            // Dont check newest line
+            for (int i = 0; i < lines.size - 1; i++)
+            {
+                if (newest.intersects(lines.get(i)))
+                {
+                    newest.setTexture(Assets.lineErrorTexture);
+                    break;
+                }
+            }
+
+            for (int i = 0; i < planets.size; i++)
+            {
+                Planet planet = planets.get(i);
+                if (!planet.isVisited && planet != newest.startPlanet && planet.isPointInside(newest.endPos))
+                {
+                    Vector2 endPos = new Vector2(planet.getCenter());
+                    Vector2 startPos = new Vector2(endPos);
+                    Vector2 lineNormal = new Vector2(newest.endPos).sub(newest.startPos).nor();
+                    lineNormal.scl(2);
+                    endPos.sub(lineNormal);
+                    startPos.add(lineNormal);
+                    newest.setEndPos(endPos);
+                    planet.isVisited = true;
+                    planetsLeft--;
+
+                    if (planetsLeft == 0)
+                    {
+                        canDrawLines = false;
+                        break;
+                    }
+                    else
+                    {
+                        lines.add(new Line(Assets.lineTexture, planet, startPos));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -92,6 +135,21 @@ public class GameScene implements Scene
         }
     }
 
+    private void startNewLine(Vector2 pos)
+    {
+        for (int i = 0; i < planets.size; i++)
+        {
+            Planet planet = planets.get(i);
+            if(planet.isPointInside(pos))
+            {
+                Vector2 startPos = new Vector2(planet.getCenter());
+                lines.add(new Line(Assets.lineTexture, planet, startPos));
+                planet.isVisited = true;
+                planetsLeft--;
+            }
+        }
+    }
+
     @Override
     public void setupInput()
     {
@@ -103,22 +161,13 @@ public class GameScene implements Scene
                 if(pointer != 0 || !canDrawLines)
                     return true;
 
+                if(lines.size > 0 && !lines.get(lines.size -1).hasEnded)
+                    return true;
+
                 Vector3 temp = new Vector3(screenX, screenY, 0);
                 temp = camera.unproject(temp);
                 Vector2 worldPos = new Vector2(temp.x, temp.y);
-
-                for (int i = 0; i < planets.size; i++)
-                {
-                    Planet planet = planets.get(i);
-                    if(planet.isPointInside(worldPos))
-                    {
-                        Vector2 startPos = new Vector2(planet.getCenter());
-                        lines.add(new Line(Assets.lineTexture, startPos));
-                        planet.isVisited = true;
-                        planetsLeft--;
-                        return true;
-                    }
-                }
+                startNewLine(worldPos);
 
                 return true;
             }
@@ -132,49 +181,6 @@ public class GameScene implements Scene
                 Vector3 temp = new Vector3(screenX, screenY, 0);
                 temp = camera.unproject(temp);
                 Vector2 worldPos = new Vector2(temp.x, temp.y);
-
-                Line newest = lines.get(lines.size-1);
-                newest.setEndPos(worldPos);
-                newest.setTexture(Assets.lineTexture);
-
-                // Dont check newest line
-                for (int i = 0; i < lines.size - 1; i++)
-                {
-                    if(newest.intersects(lines.get(i)))
-                    {
-                        newest.setTexture(Assets.lineErrorTexture);
-                        break;
-                    }
-                }
-
-                for (int i = 0; i < planets.size; i++)
-                {
-                    Planet planet = planets.get(i);
-                    if(!planet.isVisited && planet.isPointInside(worldPos))
-                    {
-                        Vector2 endPos = new Vector2(planet.getCenter());
-                        Vector2 startPos = new Vector2(endPos);
-                        Vector2 lineNormal = new Vector2(newest.endPos).sub(newest.startPos).nor();
-                        lineNormal.scl(2);
-                        endPos.sub(lineNormal);
-                        startPos.add(lineNormal);
-                        newest.setEndPos(endPos);
-                        planet.isVisited = true;
-                        planetsLeft--;
-
-                        if(planetsLeft == 0)
-                        {
-                            canDrawLines = false;
-                            return true;
-                        }
-                        else
-                        {
-                            lines.add(new Line(Assets.lineTexture, startPos));
-                            break;
-                        }
-                    }
-                }
-
                 lines.get(lines.size - 1).setEndPos(worldPos);
                 return true;
             }
