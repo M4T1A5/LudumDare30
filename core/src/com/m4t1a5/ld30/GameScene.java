@@ -18,7 +18,9 @@ public class GameScene implements Scene
     private Array<Line> lines;
 
     private boolean canDrawLines = true;
-    private int planetsLeft = Settings.PLANET_START_COUNT;
+    private int currentRoundPlanets = Settings.PLANET_START_COUNT;
+    private float nextRoundTimer = 0;
+    private int planetsLeft = currentRoundPlanets;
 
     private Camera camera;
 
@@ -59,7 +61,8 @@ public class GameScene implements Scene
             for (int i = 0; i < planets.size; i++)
             {
                 Planet planet = planets.get(i);
-                if (!planet.isVisited && planet != newest.startPlanet && planet.isPointInside(newest.endPos))
+                if (!planet.isVisited && planet != newest.startPlanet &&
+                        (planet.isPointInside(newest.endPos) || planet.intersects(newest)))
                 {
                     Vector2 endPos = new Vector2(planet.getCenter());
                     Vector2 startPos = new Vector2(endPos);
@@ -74,6 +77,7 @@ public class GameScene implements Scene
                     if (planetsLeft == 0)
                     {
                         canDrawLines = false;
+                        nextRoundTimer = 1;
                         break;
                     }
                     else
@@ -84,6 +88,12 @@ public class GameScene implements Scene
                 }
             }
         }
+
+        // Round is over
+        if(nextRoundTimer > 0 && !canDrawLines)
+            nextRoundTimer -= Gdx.graphics.getDeltaTime();
+        else if(nextRoundTimer <= 0 && !canDrawLines)
+            nextRound();
     }
 
     @Override
@@ -104,6 +114,15 @@ public class GameScene implements Scene
     {
         planets.clear();
         lines.clear();
+    }
+
+    private void nextRound()
+    {
+        dispose();
+        if(currentRoundPlanets < Settings.PLANET_MAX_COUNT)
+            currentRoundPlanets++;
+        createPlanets(currentRoundPlanets);
+        canDrawLines = true;
     }
 
     private void createPlanets(int numberOfPlanets)
@@ -133,6 +152,8 @@ public class GameScene implements Scene
             planets.add(new Planet(Assets.planetTexture, Assets.planetOutlineTexture));
             planets.get(planets.size - 1).setPosition(spawnPos);
         }
+
+        planetsLeft = numberOfPlanets;
     }
 
     private void startNewLine(Vector2 pos)

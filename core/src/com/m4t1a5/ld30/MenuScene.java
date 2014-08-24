@@ -36,6 +36,7 @@ public class MenuScene implements Scene
         skin.add("default", Assets.font20);
 
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        // Up and down were opposite form what i thought
         style.up = skin.newDrawable("buttonDown");
         style.down = skin.newDrawable("buttonUp");
         style.font = skin.getFont("default");
