@@ -6,10 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -29,12 +27,6 @@ public class LD30Game extends ApplicationAdapter
     private boolean canDrawLines = true;
     private int planetsLeft = Settings.PLANET_START;
 
-    BitmapFont font;
-
-    // Assets
-    Texture planetTexture, planetOutlineTexture;
-    Texture lineTexture, lineErrorTexture;
-
     @Override
     public void create()
     {
@@ -49,9 +41,11 @@ public class LD30Game extends ApplicationAdapter
         planets = new Array<Planet>();
         lines = new Array<Line>();
 
-        loadAssets();
+
+        Assets.loadAssets();
+
         setupInput();
-        createPlanets(Settings.PLANET_START);
+        createPlanets(Settings.PLANET_START_COUNT);
     }
 
     @Override
@@ -72,9 +66,7 @@ public class LD30Game extends ApplicationAdapter
     {
         super.dispose();
         batch.dispose();
-        planetTexture.dispose();
-        planetOutlineTexture.dispose();
-        lineTexture.dispose();
+        Assets.dispose();
     }
 
     private void update()
@@ -99,8 +91,8 @@ public class LD30Game extends ApplicationAdapter
         }
 
         String text = String.format("Derps\nDurps");
-        BitmapFont.TextBounds bounds = font.getMultiLineBounds(text);
-        font.drawMultiLine(batch, text, Settings.WORLD_WIDTH - bounds.width, Settings.WORLD_HEIGHT - bounds.height);
+        BitmapFont.TextBounds bounds = Assets.font20.getMultiLineBounds(text);
+        Assets.font20.drawMultiLine(batch, text, Settings.WORLD_WIDTH - bounds.width, Settings.WORLD_HEIGHT - bounds.height);
         batch.end();
     }
 
