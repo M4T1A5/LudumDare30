@@ -16,9 +16,10 @@ public class Assets
     public static Texture planetTexture, planetOutlineTexture;
     public static Texture lineTexture, lineErrorTexture;
 
-    public static Texture buttonUp, buttonDown;
+    public static Texture buttonUp, buttonDown, buttonDisabled;
+    public static Texture cursor, textField;
 
-    public static BitmapFont font20;
+    public static BitmapFont font20, fontSmall;
 
     private static boolean assetsLoaded = false;
 
@@ -37,6 +38,10 @@ public class Assets
 
         buttonDown = new Texture(Gdx.files.internal("buttonUp.png"));
         buttonUp = new Texture(Gdx.files.internal("buttonDown.png"));
+        buttonDisabled = new Texture(Gdx.files.internal("buttonDisabled.png"));
+
+        cursor = new Texture(Gdx.files.internal("cursor.png"));
+        textField = new Texture(Gdx.files.internal("textField.png"));
 
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("kenpixel_future.ttf"));
@@ -45,6 +50,8 @@ public class Assets
         // No need to generate more characters because i will never use them
         parameter.characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:;.,+-*/";
         font20 = generator.generateFont(parameter);
+        parameter.size = 16;
+        fontSmall = generator.generateFont(parameter);
         generator.dispose();
 
         assetsLoaded = true;
@@ -57,10 +64,19 @@ public class Assets
 
         menuBackground.dispose();
         gameBackground.dispose();
+
         planetOutlineTexture.dispose();
         planetTexture.dispose();
+
         lineErrorTexture.dispose();
         lineTexture.dispose();
+
+        buttonUp.dispose();
+        buttonDown.dispose();
+        buttonDisabled.dispose();
+
+        cursor.dispose();
+        textField.dispose();
 
         font20.dispose();
 

@@ -5,13 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LD30Game extends ApplicationAdapter
 {
+    public String playerName;
+
+    public HighScore highScore;
+
     private SpriteBatch batch;
     private Camera camera;
     private Viewport viewport;
@@ -33,6 +36,8 @@ public class LD30Game extends ApplicationAdapter
         camera.position.set(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, camera);
+
+        highScore = new HighScore();
 
         menuScene = new MenuScene(viewport);
         menuScene.create();
@@ -57,6 +62,7 @@ public class LD30Game extends ApplicationAdapter
     @Override
     public void dispose()
     {
+        highScore.saveHighScore();
         super.dispose();
         batch.dispose();
         gameScene.dispose();
@@ -70,6 +76,7 @@ public class LD30Game extends ApplicationAdapter
         {
             case Menu:
                 menuScene.setupInput();
+                menuScene.refreshHighScores();
                 break;
             case Play:
                 gameScene.dispose();
@@ -77,6 +84,11 @@ public class LD30Game extends ApplicationAdapter
                 gameScene.setupInput();
                 break;
         }
+    }
+
+    public void addScore(int score)
+    {
+        highScore.addScore(playerName, score);
     }
 
     private void update()

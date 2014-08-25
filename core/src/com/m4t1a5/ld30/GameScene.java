@@ -158,7 +158,9 @@ public class GameScene implements Scene
             }
             else
             {
-                ((LD30Game) Gdx.app.getApplicationListener()).changeState(GameState.Menu);
+                LD30Game game = ((LD30Game) Gdx.app.getApplicationListener());
+                game.addScore(score);
+                game.changeState(GameState.Menu);
             }
         }
     }
@@ -289,7 +291,6 @@ public class GameScene implements Scene
     @Override
     public void setupInput()
     {
-        // TODO: possibly cleanup input
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button)

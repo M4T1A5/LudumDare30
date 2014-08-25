@@ -19,4 +19,7 @@ public class Settings
     public static final float LINE_RESET_TIME = 0.8f;
 
     public static final int SCORE_MULTIPLIER = 1000;
+
+    public static final String SCORE_FILE = "scores.json";
+    public static final int SCORE_LIST_LENGTH = 10;
 }
