@@ -59,9 +59,9 @@ public class HighScore
             }
         });
 
-        if(scores.size() > 10)
+        if(scores.size() > Settings.SCORE_LIST_LENGTH)
         {
-            for (int i = 10; i < scores.size(); i++)
+            for (int i = Settings.SCORE_LIST_LENGTH; i < scores.size(); i++)
             {
                 scores.remove(i);
             }

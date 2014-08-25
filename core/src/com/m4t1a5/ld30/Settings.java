@@ -22,4 +22,7 @@ public class Settings
 
     public static final String SCORE_FILE = "scores.json";
     public static final int SCORE_LIST_LENGTH = 10;
+
+    public static final float PLANET_HIT_VOLUME = 0.8f;
+    public static final float MUSIC_VOLUME = 0.5f;
 }

@@ -1,6 +1,8 @@
 package com.m4t1a5.ld30;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -20,6 +22,9 @@ public class Assets
     public static Texture cursor, textField;
 
     public static BitmapFont font20, fontSmall;
+
+    public static Sound planetHit;
+    public static Music backgroundMusic;
 
     private static boolean assetsLoaded = false;
 
@@ -43,6 +48,8 @@ public class Assets
         cursor = new Texture(Gdx.files.internal("cursor.png"));
         textField = new Texture(Gdx.files.internal("textField.png"));
 
+        planetHit = Gdx.audio.newSound(Gdx.files.internal("hitPlanet.wav"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("backgroundMusic.mp3"));
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("kenpixel_future.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -77,6 +84,9 @@ public class Assets
 
         cursor.dispose();
         textField.dispose();
+
+        planetHit.dispose();
+        backgroundMusic.dispose();
 
         font20.dispose();
 

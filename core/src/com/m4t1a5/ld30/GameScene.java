@@ -117,6 +117,7 @@ public class GameScene implements Scene
                     newest.setEndPos(endPos);
                     planet.isVisited = true;
                     planetsLeft--;
+                    Assets.planetHit.play(Settings.PLANET_HIT_VOLUME);
 
                     if (planetsLeft == 0)
                     {
@@ -284,6 +285,7 @@ public class GameScene implements Scene
                 lines.add(new Line(Assets.lineTexture, planet, startPos));
                 planet.isVisited = true;
                 planetsLeft--;
+                Assets.planetHit.play(Settings.PLANET_HIT_VOLUME);
             }
         }
     }

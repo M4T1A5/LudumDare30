@@ -44,6 +44,10 @@ public class LD30Game extends ApplicationAdapter
 
         gameScene = new GameScene(camera);
         gameScene.create();
+
+        Assets.backgroundMusic.setLooping(true);
+        Assets.backgroundMusic.setVolume(Settings.MUSIC_VOLUME);
+        Assets.backgroundMusic.play();
     }
 
     @Override
