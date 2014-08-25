@@ -42,6 +42,7 @@ public class HighScore
     {
         scores.add(new Score(name, score));
         sort();
+        saveHighScore();
     }
 
     private void sort()
@@ -67,8 +68,10 @@ public class HighScore
         }
     }
 
-    public void saveHighScore()
+    private void saveHighScore()
     {
+        System.out.println(Gdx.files.isLocalStorageAvailable());
+
         FileHandle file = Gdx.files.local(Settings.SCORE_FILE);
         file.writeString(json.toJson(scores, ArrayList.class), false);
     }

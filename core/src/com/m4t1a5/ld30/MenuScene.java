@@ -69,6 +69,7 @@ public class MenuScene implements Scene
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
+                textField.getOnscreenKeyboard().show(false);
                 LD30Game game = ((LD30Game) Gdx.app.getApplicationListener());
                 game.playerName = textField.getText();
                 game.changeState(GameState.Play);

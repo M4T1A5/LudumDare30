@@ -62,7 +62,6 @@ public class LD30Game extends ApplicationAdapter
     @Override
     public void dispose()
     {
-        highScore.saveHighScore();
         super.dispose();
         batch.dispose();
         gameScene.dispose();
